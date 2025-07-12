@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flatten</title>
+</head>
+<body>
+
+</body>
+<script>
+    arr = [1, [2, [3, [4]], 5]];
+    console.log(arr);
+    console.log(flatten(arr));
+    function flatten(array){
+         var ret = [];
+         for(var i=0;i<array.length;i++){
+            if(Array.isArray(array[i])){
+                ret = ret.concat(flatten(array[i]));
+            } else {
+                ret.push(array[i]);
+            }
+         }
+         return ret;
+    }
+</script>
+</html>

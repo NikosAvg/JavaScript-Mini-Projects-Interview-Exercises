@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Async-Fetch-Retry</title>
+</head>
+<body>
+
+    <script>
+        async function fetchWithRetry(url, retries, delay = 1000) {
+            try {
+                const response = await fetch(url);
+                return response;
+            } catch (error) {
+                if (retries > 0){
+                    cosnole.log(`Fetch failed. Retrying in ${delay}ms... (${retries} retries left)`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return fetchWithRetry(url, retries=retires-1, delay);
+                } else {
+                    throw new Error(`All retries failed: ${error.message}`);
+                }
+            }
+        }
+
+        fetchWithRetry("https://dog.ceo/api/breeds/image/random", 5, 3000)
+            .then(res => res.json())
+            .then(data => console.log('Data:', data))
+            .catch(err => console.log('Final error:', err.message));
+
+    </script>
+</body>
+</html>

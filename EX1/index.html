@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TODO-LIST</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+</head>
+<body class="p-4">
+    <div class="container text-center"></div>
+        <div id="List" class="mb-4 row"></div>
+        <br>
+        <form id="f1" name="f1" action="#" class="row g-2 justify-content-center">
+            <div class="col-12">
+                <input name="f-text" class="form-control" type="text">
+            </div>
+            <div class="col-12">
+                <button type="button" class='btn btn-success w-100' onclick="add()">Add</button>
+            </div>
+            <div class="col-12">
+                <button type="button" class='btn btn-danger w-100' onclick="clearlist()">Clear</button>
+            </div>
+           
+        </form>
+    </div>
+    
+
+    <script>
+        let id;
+        
+        // Add item from localStorage (on page load)
+        document.addEventListener("DOMContentLoaded", function () {
+            const container = document.getElementById("List");
+            
+            if(localStorage.length>0){
+               // Get all keys that match your prefix
+                const keys = Object.keys(localStorage).filter(k => k.startsWith("List-Item-"));
+
+                // Sort numerically based on the ID
+                keys.sort((a, b) => {
+                    const idA = parseInt(a.split("-").pop());
+                    const idB = parseInt(b.split("-").pop());
+                    return idB - idA; // descending
+                });
+
+                if (keys.length > 0) {
+                    id = parseInt(keys[0].split('-')[2],10);
+                }
+            } else {
+                id = 0;
+            }
+            
+            for (let i = localStorage.length-1; i >=0; i--) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                addItemToDOM(key, value);
+            }
+        });
+
+        // Add new item from input
+        function add() {
+            const value = document.forms["f1"]["f-text"].value;
+            if (value === "") return;
+
+            id += 1;
+            const key = 'List-Item-' + id;
+
+            localStorage.setItem(key, value);
+            addItemToDOM(key, value);
+
+            document.forms["f1"]["f-text"].value = ""; // Clear input
+        }
+
+        // Listen for Enter key press (form submit)
+        document.getElementById("f1").addEventListener("submit", function (e) {
+            e.preventDefault(); // prevent form reload
+            add(); // call your add function
+        });
+
+        function clearlist() {
+            const list = document.getElementById("List");
+            // Get all keys first to avoid index shifting during removal
+            const keysToRemove = [];
+            // Remove only the keys added by this app
+            for (let i = localStorage.length-1; i >= 0; i--) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith("List-Item-")) {
+                keysToRemove.push(key);
+                }
+            }
+            // Now remove keys
+            for (const key of keysToRemove) {
+                localStorage.removeItem(key);
+            }
+
+            // Clear all visual list items
+            list.innerHTML = "";
+            // Reset ID counter
+            id = 0;
+        }
+        
+
+        // Create and append div with text and "Done" button
+        function addItemToDOM(key, value) {
+            const list = document.getElementById("List");
+
+            const item = document.createElement("div");
+            item.className = key + " row g-2 justify-content-center";
+
+            const text = document.createElement("p");
+            text.className = "col-10";
+            text.textContent = value;
+            const button = document.createElement("button");
+            button.textContent = "Done";
+            button.className = 'btn btn-danger col-2'
+            button.onclick = function () {
+                localStorage.removeItem(key);
+                item.remove();
+            };
+
+            item.appendChild(text);
+            item.appendChild(document.createTextNode("  "));
+            item.appendChild(button);
+            list.appendChild(item);
+
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+</body>
+</html>
