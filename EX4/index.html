@@ -15,7 +15,7 @@
             } catch (error) {
                 if (retries > 0){
                     cosnole.log(`Fetch failed. Retrying in ${delay}ms... (${retries} retries left)`);
-                    await new Promise(resolve => setTimeout(resolve, delay));
+                    await new Promise(resolve => setTimeout(resolve, delay*2));
                     return fetchWithRetry(url, retries=retires-1, delay);
                 } else {
                     throw new Error(`All retries failed: ${error.message}`);
